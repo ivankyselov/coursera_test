@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tasty Scoops</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:#1a1a2e;
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;overflow:hidden;
+}
+
+/* ── SCENE ──────────────────────────────────────────── */
+#scene{
+  width:390px;height:844px;
+  position:relative;overflow:hidden;
+  background:linear-gradient(175deg,#4FC3F7 0%,#29B6F6 35%,#81D4FA 55%,#E1F5FE 58%,#F5DEB3 58%,#DEB887 70%,#C19A6B 100%);
+}
+
+/* Ocean strip */
+#scene::before{
+  content:'';position:absolute;left:0;right:0;top:56%;height:6%;
+  background:linear-gradient(180deg,#0288D1 0%,#0277BD 100%);opacity:.45;
+}
+
+/* Tent canopy */
+.tent{
+  position:absolute;top:0;left:0;right:0;height:80px;
+  background:linear-gradient(180deg,#FAFAFA 0%,#F5F0E8 100%);
+  clip-path:polygon(0 0,100% 0,100% 65%,95% 100%,5% 100%);
+  border-bottom:3px solid #D4B896;
+  display:flex;align-items:flex-end;justify-content:center;gap:60px;
+  padding-bottom:8px;
+}
+.tent-pole{width:6px;height:60px;background:linear-gradient(90deg,#A0522D,#8B4513,#A0522D);border-radius:3px}
+.tent-stripe{
+  position:absolute;top:0;left:0;right:0;height:100%;
+  background:repeating-linear-gradient(90deg,transparent 0,transparent 28px,rgba(255,100,100,.12) 28px,rgba(255,100,100,.12) 40px);
+  clip-path:polygon(0 0,100% 0,100% 65%,95% 100%,5% 100%);
+}
+
+/* Palm trees */
+.palm{position:absolute;bottom:140px;font-size:72px;pointer-events:none;line-height:1}
+.palm-l{left:-18px;transform:scaleX(-1) rotate(-5deg)}
+.palm-r{right:-18px;transform:rotate(5deg)}
+
+/* ── HEADER ─────────────────────────────────────────── */
+.hdr{
+  position:absolute;top:8px;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:0 12px;z-index:20;
+}
+.coins-box{
+  background:rgba(255,255,255,.9);border:2px solid #FFD700;border-radius:20px;
+  padding:5px 12px;display:flex;align-items:center;gap:6px;
+  font-size:18px;font-weight:700;color:#7B4F00;
+  box-shadow:2px 2px 8px rgba(0,0,0,.2);
+}
+.coin-icon{
+  width:28px;height:28px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFE566,#FFB800 60%,#9A6800);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+
+/* ── ORDERS ─────────────────────────────────────────── */
+.orders{display:flex;gap:6px;flex-direction:column;align-items:flex-end}
+.order-card{
+  background:rgba(255,252,240,.95);border:2px solid #D4B896;border-radius:12px;
+  padding:6px 8px;width:108px;text-align:center;cursor:pointer;
+  box-shadow:2px 3px 8px rgba(0,0,0,.25);transition:transform .15s;
+  position:relative;
+}
+.order-card:hover{transform:scale(1.04)}
+.order-card.can-fill{
+  border-color:#FF6B35;
+  animation:orderpulse .7s ease-in-out infinite alternate;
+}
+@keyframes orderpulse{
+  from{box-shadow:2px 3px 8px rgba(255,107,53,.3)}
+  to{box-shadow:2px 3px 16px rgba(255,107,53,.7),0 0 0 2px rgba(255,107,53,.3)}
+}
+.order-label{font-size:8px;font-weight:800;color:#8B4513;letter-spacing:.5px;text-transform:uppercase}
+.order-num{font-size:8px;color:#AAA;margin-bottom:2px}
+.order-item{font-size:34px;line-height:1.1;margin:2px 0}
+.order-reward{font-size:12px;font-weight:700;color:#8B6914;display:flex;align-items:center;justify-content:center;gap:3px}
+.order-reward-coin{
+  width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFE566,#FFB800 60%,#9A6800);
+  display:inline-block;
+}
+
+/* ── TABLE ───────────────────────────────────────────── */
+.table-wrap{
+  position:absolute;top:92px;left:50%;transform:translateX(-50%);
+  width:360px;
+}
+.table{
+  background:linear-gradient(175deg,#E8C99A 0%,#D4A96A 20%,#C8955A 40%,#D4A96A 60%,#BF8A4A 80%,#C8955A 100%);
+  border-radius:18px 18px 8px 8px;
+  border:4px solid #8B5E2A;
+  padding:12px;
+  box-shadow:0 8px 28px rgba(0,0,0,.4),inset 0 2px 6px rgba(255,255,255,.25);
+  position:relative;overflow:hidden;
+}
+/* wood grain */
+.table::after{
+  content:'';position:absolute;inset:0;border-radius:14px;
+  background:repeating-linear-gradient(88deg,transparent 0,transparent 42px,rgba(0,0,0,.04) 42px,rgba(0,0,0,.04) 44px);
+  pointer-events:none;
+}
+/* center divider line */
+.divider{
+  position:absolute;left:14px;right:14px;top:50%;border-top:2px dashed rgba(255,255,255,.4);
+  pointer-events:none;
+}
+
+/* ── GRID ────────────────────────────────────────────── */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,60px);
+  grid-template-rows:repeat(6,60px);
+  gap:5px;
+  position:relative;z-index:2;
+}
+.cell{
+  width:60px;height:60px;border-radius:10px;
+  background:rgba(255,255,255,.12);
+  border:1.5px dashed rgba(255,255,255,.3);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .15s;position:relative;
+}
+.cell:hover{background:rgba(255,255,255,.22)}
+.cell.sel{border:2px solid #FFD700;background:rgba(255,215,0,.2)}
+
+/* ── ICE CREAM ITEM ──────────────────────────────────── */
+.ic{
+  width:54px;height:54px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;cursor:pointer;position:relative;
+  transition:transform .12s,box-shadow .12s;
+  box-shadow:0 4px 10px rgba(0,0,0,.35),inset 0 -4px 8px rgba(0,0,0,.2);
+  user-select:none;
+}
+.ic:hover{transform:scale(1.1)}
+.ic.sel{
+  transform:scale(1.15);
+  box-shadow:0 0 0 3px #FFD700,0 4px 12px rgba(0,0,0,.4),inset 0 -4px 8px rgba(0,0,0,.2);
+}
+/* tier badge */
+.tier-badge{
+  position:absolute;bottom:-2px;right:-2px;
+  width:16px;height:16px;border-radius:50%;
+  background:#333;color:#fff;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid #fff;
+}
+
+/* merge flash */
+@keyframes mergeFlash{
+  0%{transform:scale(1)}40%{transform:scale(1.45)}70%{transform:scale(.9)}100%{transform:scale(1)}
+}
+.merging{animation:mergeFlash .35s ease}
+
+/* ── TRAY ────────────────────────────────────────────── */
+.tray-wrap{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:8px 12px 18px;
+}
+.tray{
+  background:linear-gradient(180deg,#C8955A,#8B5E2A);
+  border:3px solid #5D3A1A;border-radius:16px;
+  padding:10px 8px;
+  display:flex;justify-content:center;gap:7px;
+  box-shadow:0 -4px 14px rgba(0,0,0,.3),inset 0 2px 5px rgba(255,255,255,.15);
+}
+.tray-item{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;cursor:pointer;
+  box-shadow:0 3px 8px rgba(0,0,0,.35),inset 0 -3px 6px rgba(0,0,0,.2);
+  transition:transform .12s,box-shadow .12s;
+  position:relative;
+}
+.tray-item:hover{transform:scale(1.18) translateY(-4px)}
+.tray-item:active{transform:scale(.93)}
+.tray-item .badge{
+  position:absolute;top:-4px;right:-4px;
+  background:#fff;border:1.5px solid #888;border-radius:10px;
+  font-size:8px;padding:0 3px;color:#444;font-weight:700;
+}
+
+/* ── NEXT PANEL ──────────────────────────────────────── */
+.next-panel{
+  position:absolute;top:90px;right:10px;z-index:15;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.next-label{
+  background:#4CAF50;color:#fff;font-size:11px;font-weight:800;
+  padding:2px 8px;border-radius:8px;box-shadow:1px 2px 4px rgba(0,0,0,.3);
+  letter-spacing:.5px;
+}
+.next-ic{
+  width:52px;height:52px;border-radius:12px;
+  background:rgba(255,255,255,.9);border:2px solid #DEB887;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;box-shadow:2px 3px 8px rgba(0,0,0,.25);
+  cursor:default;
+}
+
+/* ── CURRENT ITEM INDICATOR ──────────────────────────── */
+.cur-wrap{
+  position:absolute;bottom:88px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:3px;z-index:15;
+}
+.cur-label{
+  font-size:9px;font-weight:700;color:rgba(255,255,255,.8);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.cur-ic{
+  width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;
+  box-shadow:0 3px 10px rgba(0,0,0,.35),inset 0 -3px 6px rgba(0,0,0,.2);
+  animation:bobble 1s ease-in-out infinite alternate;
+}
+@keyframes bobble{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+
+/* ── FLOATING COINS ──────────────────────────────────── */
+.coin-float{
+  position:fixed;pointer-events:none;
+  font-size:15px;font-weight:800;
+  color:#FFD700;text-shadow:1px 1px 3px rgba(0,0,0,.6);
+  animation:coinUp 1.3s forwards;z-index:300;
+}
+@keyframes coinUp{
+  0%{opacity:1;transform:translateY(0) scale(1)}
+  60%{opacity:1;transform:translateY(-55px) scale(1.15)}
+  100%{opacity:0;transform:translateY(-90px) scale(.8)}
+}
+
+/* ── SPARKLE ─────────────────────────────────────────── */
+.sparkle{
+  position:fixed;pointer-events:none;
+  font-size:22px;
+  animation:sparkAnim .55s forwards;z-index:300;
+}
+@keyframes sparkAnim{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(0) rotate(0)}
+  50%{opacity:1;transform:translate(-50%,-60%) scale(1.6) rotate(20deg)}
+  100%{opacity:0;transform:translate(-50%,-100%) scale(.5) rotate(40deg)}
+}
+
+/* ── STATUS TOAST ────────────────────────────────────── */
+.toast{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(20,20,20,.85);color:#fff;
+  padding:10px 22px;border-radius:20px;font-size:16px;font-weight:700;
+  pointer-events:none;opacity:0;transition:opacity .25s;z-index:400;
+  text-align:center;
+}
+.toast.show{opacity:1}
+
+/* ── SCORE ANIM ──────────────────────────────────────── */
+@keyframes coinBump{
+  0%{transform:scale(1)}30%{transform:scale(1.3)}60%{transform:scale(.9)}100%{transform:scale(1)}
+}
+.bumping{animation:coinBump .4s ease}
+
+/* ── INSTRUCTIONS ────────────────────────────────────── */
+.info-btn{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  background:rgba(255,255,255,.85);border:2px solid #DEB887;border-radius:50%;
+  width:26px;height:26px;font-size:13px;font-weight:700;color:#8B4513;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:25;
+}
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;z-index:500;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal{
+  background:#FFF8F0;border:3px solid #DEB887;border-radius:18px;
+  padding:20px;max-width:320px;width:90%;
+  box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+.modal h2{color:#8B4513;font-size:18px;margin-bottom:12px;text-align:center}
+.modal p{color:#555;font-size:13px;line-height:1.6;margin-bottom:8px}
+.modal .close-btn{
+  display:block;margin:12px auto 0;
+  background:#8B4513;color:#fff;border:none;
+  padding:8px 24px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div id="scene">
+  <!-- Tent -->
+  <div class="tent">
+    <div class="tent-stripe"></div>
+    <div class="tent-pole"></div>
+    <div class="tent-pole"></div>
+    <div class="tent-pole"></div>
+  </div>
+
+  <!-- Palm trees -->
+  <div class="palm palm-l">🌴</div>
+  <div class="palm palm-r">🌴</div>
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="coins-box">
+      <div class="coin-icon" id="coinIcon">🪙</div>
+      <span id="coinDisplay">0</span>
+    </div>
+    <div class="orders" id="orders"></div>
+  </div>
+
+  <!-- Info button -->
+  <div class="info-btn" id="infoBtn">?</div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table">
+      <div class="divider"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <!-- Next item panel -->
+  <div class="next-panel" id="nextPanel">
+    <div class="next-label">NEXT</div>
+    <div class="next-ic" id="nextIc"></div>
+  </div>
+
+  <!-- Current item indicator (bottom center above tray) -->
+  <div class="cur-wrap" id="curWrap">
+    <div class="cur-label">Tap a cell to place</div>
+    <div class="cur-ic" id="curIc"></div>
+  </div>
+
+  <!-- Tray -->
+  <div class="tray-wrap">
+    <div class="tray" id="tray"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Instructions modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2>🍨 How to Play</h2>
+    <p><strong>Place items:</strong> Tap the current item (bobbling above the tray) onto any empty cell. Or tap any item in the tray to place it directly.</p>
+    <p><strong>Merge:</strong> Tap an item on the board to select it (gold glow). Tap another item of the <em>same tier</em> to merge them into a higher tier!</p>
+    <p><strong>Fulfill orders:</strong> When you have an item matching a To-Go Order, select it, then tap the order card (it pulses red). Earn coins! 🪙</p>
+    <p><strong>Goal:</strong> Merge your way to the legendary ✨ Rainbow Sundae and earn as many coins as possible!</p>
+    <button class="close-btn" id="closeModal">Got it!</button>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────────
+const ROWS = 6, COLS = 5;
+
+const TIERS = [
+  { name:'Blueberry Pop',  color:'#60A5FA', dark:'#1D4ED8', emoji:'🫐' },
+  { name:'Lemon Scoop',    color:'#FDE047', dark:'#A16207', emoji:'🍋' },
+  { name:'Mint Bowl',      color:'#34D399', dark:'#065F46', emoji:'🍃' },
+  { name:'Berry Bliss',    color:'#C084FC', dark:'#6D28D9', emoji:'🍇' },
+  { name:'Strawberry',     color:'#F87171', dark:'#9F1239', emoji:'🍓' },
+  { name:'Mango Mix',      color:'#FB923C', dark:'#9A3412', emoji:'🥭' },
+  { name:'Choco Luxe',     color:'#A16207', dark:'#451A03', emoji:'🍫' },
+  { name:'Rainbow Dream',  color:'#EC4899', dark:'#831843', emoji:'🌈' },
+];
+
+// Order value multipliers per tier
+const ORDER_VALUES = [0, 0, 150, 280, 450, 650, 950, 1400];
+
+// ─── STATE ─────────────────────────────────────────────────────────
+let coins = 0;
+let board = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+let selected = null; // {r, c}
+let orders = [];
+let orderSeed = 1200;
+let currentTier = 1; // the item about to be placed
+let nextTier    = 1; // preview of next item
+
+// ─── HELPERS ───────────────────────────────────────────────────────
+function rndTier() {
+  const w = [0.55, 0.30, 0.10, 0.05];
+  const r = Math.random();
+  let acc = 0;
+  for (let i = 0; i < w.length; i++) { acc += w[i]; if (r < acc) return i + 1; }
+  return 1;
+}
+
+function makeOrder() {
+  const tier = Math.floor(Math.random() * 4) + 3; // tier 3–6
+  const base = ORDER_VALUES[tier] || 150;
+  return { id: orderSeed++, tier, reward: base + Math.floor(Math.random() * 80) };
+}
+
+function emptyCell() {
+  const emp = [];
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (!board[r][c]) emp.push({r, c});
+  return emp.length ? emp[Math.floor(Math.random() * emp.length)] : null;
+}
+
+function isBoardFull() {
+  return !emptyCell();
+}
+
+// ─── RENDER ────────────────────────────────────────────────────────
+function renderCoins() {
+  document.getElementById('coinDisplay').textContent = coins.toLocaleString();
+}
+
+function renderOrders() {
+  const container = document.getElementById('orders');
+  container.innerHTML = '';
+  orders.forEach(o => {
+    const td = TIERS[o.tier - 1];
+    const selItem = selected ? board[selected.r][selected.c] : null;
+    const canFill = selItem && selItem.tier === o.tier;
+
+    const card = document.createElement('div');
+    card.className = 'order-card' + (canFill ? ' can-fill' : '');
+    card.innerHTML = `
+      <div class="order-label">To-Go Order</div>
+      <div class="order-num">Order No. ${o.id}</div>
+      <div class="order-item">${td.emoji}</div>
+      <div class="order-reward">
+        <span class="order-reward-coin"></span>${o.reward}
+      </div>`;
+    card.onclick = () => fulfillOrder(o);
+    container.appendChild(card);
+  });
+}
+
+function renderGrid() {
+  const g = document.getElementById('grid');
+  g.innerHTML = '';
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (selected?.r === r && selected?.c === c ? ' sel' : '');
+      cell.dataset.r = r; cell.dataset.c = c;
+
+      const item = board[r][c];
+      if (item) {
+        const td = TIERS[item.tier - 1];
+        const ic = document.createElement('div');
+        ic.className = 'ic' + (selected?.r === r && selected?.c === c ? ' sel' : '');
+        ic.style.background = `radial-gradient(circle at 38% 32%, ${td.color}EE, ${td.color}, ${td.dark})`;
+        ic.textContent = td.emoji;
+
+        const badge = document.createElement('div');
+        badge.className = 'tier-badge';
+        badge.textContent = item.tier;
+        ic.appendChild(badge);
+        cell.appendChild(ic);
+      }
+
+      cell.addEventListener('click', () => handleCellClick(r, c));
+      g.appendChild(cell);
+    }
+  }
+}
+
+function renderCurrent() {
+  const td = TIERS[currentTier - 1];
+  const el = document.getElementById('curIc');
+  el.style.background = `radial-gradient(circle at 38% 32%, ${td.color}EE, ${td.color}, ${td.dark})`;
+  el.textContent = td.emoji;
+
+  const nd = TIERS[nextTier - 1];
+  const nel = document.getElementById('nextIc');
+  nel.style.background = `radial-gradient(circle at 38% 32%, ${nd.color}EE, ${nd.color}, ${nd.dark})`;
+  nel.textContent = nd.emoji;
+}
+
+function renderTray() {
+  const tray = document.getElementById('tray');
+  tray.innerHTML = '';
+  // Show tier 1–7 as a reference / quick-add bar
+  [1, 2, 3, 4, 5, 6, 7, 8].forEach(t => {
+    const td = TIERS[t - 1];
+    const el = document.createElement('div');
+    el.className = 'tray-item';
+    el.style.background = `radial-gradient(circle at 38% 32%, ${td.color}EE, ${td.color}, ${td.dark})`;
+    el.textContent = td.emoji;
+    el.title = td.name;
+    // Only tier 1 is free; higher tiers visible but placing costs coins
+    if (t === 1) {
+      el.onclick = () => quickPlace(t);
+    } else {
+      const cost = (t - 1) * 100;
+      const badge = document.createElement('div');
+      badge.className = 'badge';
+      badge.textContent = cost;
+      el.appendChild(badge);
+      el.onclick = () => buyAndPlace(t, cost);
+    }
+    tray.appendChild(el);
+  });
+}
+
+function renderAll() {
+  renderGrid();
+  renderOrders();
+  renderCurrent();
+}
+
+// ─── INTERACTIONS ───────────────────────────────────────────────────
+function handleCellClick(r, c) {
+  const item = board[r][c];
+
+  // If cell is empty: place current item
+  if (!item) {
+    if (selected) { selected = null; renderAll(); return; }
+    placeCurrentItem(r, c);
+    return;
+  }
+
+  // If no selection yet, select this item
+  if (!selected) {
+    selected = {r, c};
+    renderAll();
+    return;
+  }
+
+  // Clicking the already-selected item → deselect
+  if (selected.r === r && selected.c === c) {
+    selected = null;
+    renderAll();
+    return;
+  }
+
+  const selItem = board[selected.r][selected.c];
+
+  // Same tier → merge
+  if (selItem && selItem.tier === item.tier) {
+    doMerge(selected, {r, c});
+    return;
+  }
+
+  // Different tier → switch selection
+  selected = {r, c};
+  renderAll();
+}
+
+function placeCurrentItem(r, c) {
+  board[r][c] = {tier: currentTier};
+  currentTier = nextTier;
+  nextTier = rndTier();
+  selected = null;
+  renderAll();
+}
+
+function doMerge(a, b) {
+  const newTier = Math.min(board[a.r][a.c].tier + 1, TIERS.length);
+  board[a.r][a.c] = {tier: newTier};
+  board[b.r][b.c] = null;
+
+  // Sparkle
+  const cellEl = document.querySelector(`[data-r="${a.r}"][data-c="${a.c}"]`);
+  if (cellEl) {
+    const rect = cellEl.getBoundingClientRect();
+    spawnSparkle(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  }
+
+  selected = null;
+  renderAll();
+  showToast(`Merged to ${TIERS[newTier - 1].name}! ✨`);
+}
+
+function fulfillOrder(order) {
+  if (!selected) { showToast('Select an ice cream first!'); return; }
+  const item = board[selected.r][selected.c];
+  if (!item) { showToast('Select an ice cream first!'); return; }
+  if (item.tier !== order.tier) {
+    showToast(`Need ${TIERS[order.tier - 1].name}!`);
+    return;
+  }
+
+  // Get cell position for coin float
+  const cellEl = document.querySelector(`[data-r="${selected.r}"][data-c="${selected.c}"]`);
+
+  board[selected.r][selected.c] = null;
+  const earned = order.reward;
+  addCoins(earned, cellEl);
+
+  const idx = orders.indexOf(order);
+  orders[idx] = makeOrder();
+
+  selected = null;
+  renderAll();
+  showToast(`Order fulfilled! +${earned} 🪙`);
+}
+
+function quickPlace(tier) {
+  if (isBoardFull()) { showToast('Board is full! Merge some items!'); return; }
+  const cell = emptyCell();
+  if (cell) {
+    board[cell.r][cell.c] = {tier};
+    renderAll();
+  }
+}
+
+function buyAndPlace(tier, cost) {
+  if (coins < cost) { showToast(`Need ${cost} coins!`); return; }
+  if (isBoardFull()) { showToast('Board is full!'); return; }
+  const cell = emptyCell();
+  if (!cell) return;
+  coins -= cost;
+  board[cell.r][cell.c] = {tier};
+  renderCoins();
+  renderAll();
+}
+
+// ─── EFFECTS ───────────────────────────────────────────────────────
+function addCoins(amount, refEl) {
+  coins += amount;
+  renderCoins();
+
+  // Bump animation on coin box
+  const icon = document.getElementById('coinIcon');
+  icon.classList.remove('bumping');
+  void icon.offsetWidth;
+  icon.classList.add('bumping');
+
+  if (refEl) {
+    const rect = refEl.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'coin-float';
+    el.textContent = '+' + amount + ' 🪙';
+    el.style.left = (rect.left + rect.width / 2 - 25) + 'px';
+    el.style.top = rect.top + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1350);
+  }
+}
+
+function spawnSparkle(x, y) {
+  ['✨','⭐','💫'].forEach((ch, i) => {
+    const el = document.createElement('div');
+    el.className = 'sparkle';
+    el.textContent = ch;
+    el.style.left = (x + (i - 1) * 18) + 'px';
+    el.style.top = y + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 600);
+  });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1600);
+}
+
+// ─── CURRENT ITEM: tap on cur-wrap places it ───────────────────────
+document.getElementById('curWrap').addEventListener('click', () => {
+  const cell = emptyCell();
+  if (!cell) { showToast('Board is full! Merge some items!'); return; }
+  placeCurrentItem(cell.r, cell.c);
+});
+
+// ─── INFO MODAL ────────────────────────────────────────────────────
+document.getElementById('infoBtn').onclick = () =>
+  document.getElementById('modalBg').classList.add('open');
+document.getElementById('closeModal').onclick = () =>
+  document.getElementById('modalBg').classList.remove('open');
+document.getElementById('modalBg').onclick = (e) => {
+  if (e.target === document.getElementById('modalBg'))
+    document.getElementById('modalBg').classList.remove('open');
+};
+
+// ─── INIT ──────────────────────────────────────────────────────────
+function init() {
+  orders = [makeOrder(), makeOrder()];
+  currentTier = rndTier();
+  nextTier    = rndTier();
+
+  // Seed board with some starter items
+  const seeds = [1,1,1,2,1,2,1,1];
+  seeds.forEach(t => {
+    const cell = emptyCell();
+    if (cell) board[cell.r][cell.c] = {tier: t};
+  });
+
+  renderTray();
+  renderAll();
+  showToast('Welcome! Merge ice creams to fulfill orders 🍨');
+}
+
+init();
+</script>
+</body>
+</html>
